@@ -89,3 +89,181 @@ strncat(output,&state[0],output_byte_len*sizeof(unsigned char));
 return output;
 
 }
+
+void theta(unsigned char A[][][],unsigned char C[][],unsigned char D[][]);
+
+void rho(unsigned char A[][][]);
+
+void pi(unsigned char A[][][]);
+
+void chi(unsigned char A[][][]);
+
+void keccak_p(unsigned char *S,unsigned long long int n_r)	{
+
+	unsigned x = 0, y = 0, z = 0;
+
+	while ( y < 5 )			
+	{
+
+		while ( x < 5 )	
+		{
+			
+			while ( z < 64 )
+			{
+				A[x][y][z] = (S[(64*(5*y+x)+z)/8] >> (7-(64*(5*y+x)+z)%8)) & 0b1;
+
+				z++;
+
+			}
+
+			if ( z == 64 )
+			{
+
+				x++;
+
+				z = 0;	
+			}
+		}
+
+		if ( x == 5 )
+		{
+			y++;
+
+			x = 0;
+		}
+	}
+
+	unsigned char C[5][64];
+
+	unsigned char D[5][64];
+
+	unsigned i_r = 0;
+
+	while ( i_r < n_r)
+	{
+		
+		theta(A,C,D);
+
+		rho(A);
+
+		pi(A);
+
+		chi(A);
+
+		iota(A,i_r);
+
+		i_r++;
+
+	}
+
+	// Redo large x,y,z while loop, switching left and right sides across "=" operation
+
+}
+
+
+void theta(unsigned char A[][][],unsigned char C[][],unsigned char D[][])
+{
+	
+	unsigned x = 0, z = 0, y = 0;
+
+	while ( x < 5 )
+	{
+		while ( z < 64 )
+		{
+			C[x][z] = A[x,0,z] ^ A[x,1,z] ^ A[x,2,z] ^ A[x,3,z] ^ A[x,4,z];
+
+			D[x][z] = C[(x-1) % 5,z] ^ C[(x+1)%5,(z-1)%64];
+
+			while ( y < 5 )
+			{
+				
+				A[x][y][z] = A[x][y][z] ^ D[x][z];
+
+				y++;
+
+			}
+
+			y = 0;
+
+			z++;
+		}
+
+		z = 0; x++;
+	}
+
+}
+
+
+void rho(unsigned char A[][][])
+{
+	unsigned x = 1, y = 0, z = 0, t = 0;
+
+	while ( z < 64 )
+	{
+		x = 1; y = 0; t = 0;
+	
+		while ( t < 23 )
+		{
+			A[x][y][z] = A[x][y][(z-(t+1)(t+2)/2)%64];
+
+			x = y; y = (2*x+3*y)%5;
+
+			t++;
+		}
+
+		z++;
+	}
+
+}
+
+void pi(unsigned char A[][][])
+{
+	unsigned x = 0, y = 0, z = 0;
+
+	while ( y < 5 )
+	{
+		while ( x < 5 )
+		{
+			while ( z < 64 )
+			{
+				A[x][y][z] = A[(x+3*y)%5,x,z];
+				z++;
+			}
+
+			z = 0; x++;
+		}
+	}
+
+}
+
+void chi(unsigned char A[][][])
+{
+	unsigned x = 0, y = 0, z = 0;
+
+	while ( y < 5 )
+	{
+		while ( x < 5 )
+		{
+			
+			while ( z < 64 )
+			{
+				A[x][y][z] = A[x][y][z] ^ (
+	(
+		A[(x+1)%5][y][z] ^ 1)
+
+		*
+
+		A[(x+2)%5][y][z]
+
+	);
+
+			}
+			
+			z = 0; x++;
+		}
+
+		x = 0; y++;
+
+	}
+
+} 
