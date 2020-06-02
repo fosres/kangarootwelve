@@ -266,4 +266,44 @@ void chi(unsigned char A[][][])
 
 	}
 
-} 
+}
+
+unsigned char rc(unsigned long long t)
+{
+	unsigned char RC[9] = {0b1,0b0,0b0,0b0,0b0,0b0,0b0,0b0,0b0};
+
+	if ( t % 255 == 0 )
+	{
+		return 0b1;
+	}
+	
+	unsigned i = 0, j = 0;
+
+	while ( i < (t % 255) )
+	{
+		j = 8;
+
+		while ( j >= 1)
+		{
+			
+			RC[j] = RC[j-1];
+
+			j--;
+
+		}
+
+		RC[0] = 0b0;
+
+		RC[4] = RC[0] ^ RC[8];
+
+		RC[5] = RC[4] ^ RC[8];
+
+		RC[6] = RC[6] ^ RC[8];
+
+		RC[8] = 0b0;
+	}
+
+	return RC[0];
+}
+
+ 
