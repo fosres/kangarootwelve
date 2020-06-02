@@ -306,4 +306,49 @@ unsigned char rc(unsigned long long t)
 	return RC[0];
 }
 
- 
+void iota(unsigned char A[][][],unsigned i_r)
+{
+	unsigned char R[64];
+
+	memset(RC,0x0,64*sizeof(unsigned char));
+
+	unsigned j = 0, z = 0;
+
+	while ( j < 6 )
+	{
+		RC[(unsigned)pow(2,j)-1] = rc(j+7*i-4);
+
+		j++;
+	}
+
+	while ( z < 64 )
+	{
+		A[0,0,z] = A[0,0,z] ^ RC[z];
+
+		z++;
+	}
+
+}
+
+unsigned char * encode = (unsigned char*)calloc(257,sizeof(unsigned char));
+
+unsigned char e_p = encode;
+
+void length_encode(unsigned long long int x)
+{
+
+	if ( x == 0 )
+	{
+		*e_p = (e_p - enocde);
+
+		e_p--;
+
+		return;
+	}
+
+	e_p++;
+
+	length_encode(x/256);
+
+	*e_p-- = x % 256;
+} 
